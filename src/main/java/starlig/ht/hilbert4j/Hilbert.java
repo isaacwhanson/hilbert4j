@@ -96,7 +96,7 @@ public class Hilbert {
      * @return number of points, 2^(n*m)
      */
     public long getLength() {
-        return (long) Math.pow(2, n * m);
+        return 1L << (n * m);
     }
 
     /**
