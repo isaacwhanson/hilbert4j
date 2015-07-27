@@ -5,18 +5,6 @@ package starlig.ht.hilbert4j;
  */
 public class Hilbert {
 
-    protected int n;
-    protected int m;
-
-    /**
-     * @param n number of dimensions
-     * @param m bits per dimension (order)
-     */
-    public Hilbert(int n, int m) {
-        this.n = n;
-        this.m = m;
-    }
-
     /**
      * @param x bit-field
      * @param i position
@@ -62,34 +50,42 @@ public class Hilbert {
     public static int tsb(long x) {
         return Long.numberOfTrailingZeros(~x);
     }
+    protected int n;
+    protected int m;
+
+    /**
+     * @param n number of dimensions
+     * @param m bits per dimension (order)
+     */
+    public Hilbert(int n, int m) {
+        this.n = n;
+        this.m = m;
+    }
 
     /**
      * @param x bit-field
      * @param i rotate bits right
-     * @param j lsb to rotate
-     * @return x with j lsb rotated by i right >>>
+     * @return x with n lsb rotated by i right >>>
      */
-    public static long rotateRight(long x, int i, int j) {
-        return (((x >>> i) | (x << (j - i))) & mask(j)) | (x & ~mask(j));
+    public long rotateRight(long x, int i) {
+        return (((x >>> i) | (x << (n - i))) & mask(n)) | (x & ~mask(n));
     }
 
     /**
      * @param x bit-field
      * @param i rotate bits left
-     * @param j lsb to rotate
-     * @return x with j lsb rotated by i left <<
+     * @return x with n lsb rotated by i left <<
      */
-    public static long rotateLeft(long x, int i, int j) {
-        return (((x << i) | (x >>> (j - i))) & mask(j)) | (x & ~mask(j));
+    public long rotateLeft(long x, int i) {
+        return (((x << i) | (x >>> (n - i))) & mask(n)) | (x & ~mask(n));
     }
 
     /**
      * @param x long to convert
-     * @param i number of places
      * @return binary string
      */
-    public static String toBinaryString(long x, int i) {
-        String format = "%" + Integer.toString(i) + "s";
+    public String toBinaryString(long x) {
+        String format = "%" + Integer.toString(n * m) + "s";
         return String.format(format, Long.toBinaryString(x)).replace(" ", "0");
     }
 
@@ -98,14 +94,6 @@ public class Hilbert {
      */
     public long getLength() {
         return 1L << (n * m);
-    }
-
-    /**
-     * @param i number to convert
-     * @return binary string with length n*m
-     */
-    public String toBinaryString(long i) {
-        return toBinaryString(i, n * m);
     }
 
     /**
@@ -155,14 +143,6 @@ public class Hilbert {
         return i == 0L ? 0L : getGrayCode(((i - 1) >>> 2) << 1);
     }
 
-    protected long rotateLeft(long x, int i) {
-        return rotateLeft(x, i, n);
-    }
-
-    protected long rotateRight(long x, int i) {
-        return rotateRight(x, i, n);
-    }
-
     /**
      * @param e entry point
      * @param d intra-sub hypercube dimension
@@ -207,14 +187,14 @@ public class Hilbert {
      * @param h hilbert index
      * @return point on curve at h (interlaced)
      */
-    public long hilbertInverse(long h) {
+    public long hilbertInv(long h) {
         long e = 0L;
         int d = 0;
         long p = 0L;
         for (int i = m - 1; i > -1; i--) {
             long w = 0L;
             for (int j = 0; j < n; j++)
-                w = setBit(w, j, getBit(h, (i * n) + j));
+                w = setBit(w, j, getBit(h, j + (i * n)));
             long l = transformInv(e, d, getGrayCode(w));
             for (int j = 0; j < n; j++)
                 p = setBit(p, j + (i * n), getBit(l, j));
