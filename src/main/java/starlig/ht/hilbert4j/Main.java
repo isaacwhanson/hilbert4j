@@ -14,7 +14,7 @@ public class Main {
             prn(String.format("i=%d ", i));
             // p = H-1(i)
             long p = hil.hilbertInverse(i);
-            prn("p=" + hil.toBinaryString(p) + String.format("(%d)", p));
+            prn("p=" + hil.toBinaryString(p) + String.format("(%d) ", p));
             // h = H(p)
             long h = hil.hilbert(p);
             prn(String.format("h=%d ", h));

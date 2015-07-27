@@ -42,7 +42,8 @@ public class Hilbert {
      * @return minimum bits to represent value - 1
      */
     public static int log2(long x) {
-        if(x == 0) return 0;
+        if (x == 0)
+            return 0;
         return 63 - Long.numberOfLeadingZeros(x);
     }
 
@@ -182,7 +183,6 @@ public class Hilbert {
         return transform(rotateRight(e, d + 1), n - d - 2, b);
     }
 
-
     /**
      * @param p interlaced point data
      * @return hilbert index of point p
@@ -193,9 +193,8 @@ public class Hilbert {
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
             long l = 0;
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++)
                 l = setBit(l, j, getBit(p, j + (i * n)));
-            }
             long w = getGrayCodeInv(transform(e, d, l));
             h = (h << n) | w;
             e ^= rotateLeft(entry(w), d + 1);
@@ -214,13 +213,11 @@ public class Hilbert {
         long p = 0L;
         for (int i = m - 1; i > -1; i--) {
             long w = 0L;
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++)
                 w = setBit(w, j, getBit(h, (i * n) + j));
-            }
             long l = transformInv(e, d, getGrayCode(w));
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++)
                 p = setBit(p, j + (i * n), getBit(l, j));
-            }
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
         }
