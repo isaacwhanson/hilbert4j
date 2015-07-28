@@ -124,15 +124,7 @@ public class Hilbert {
      * @return intra-sub hypercube dimension
      */
     protected int intra(long i) {
-        return i == 0 ? 0 : (int) Long.remainderUnsigned(inter(i - 1L + (i & 1L)), n);
-    }
-
-    /**
-     * @param i index on curve
-     * @return inter-sub hypercube dimension
-     */
-    protected int inter(long i) {
-        return tsb(i);
+        return i == 0 ? 0 : (int) Long.remainderUnsigned(tsb(i - 1L + (i & 1L)), n);
     }
 
     /**
@@ -140,7 +132,7 @@ public class Hilbert {
      * @return entry point on sub-hypercube
      */
     protected long entry(long i) {
-        return i == 0L ? 0L : getGrayCode(((i - 1) >>> 2) << 1);
+        return i == 0L ? 0L : getGrayCode(((i - 1) >>> 1) << 1);
     }
 
     /**
@@ -163,6 +155,12 @@ public class Hilbert {
         return transform(rotateRight(e, d + 1), n - d - 2, b);
     }
 
+    /**
+     * @param x bit-field
+     * @param i set offset in units of n
+     * @param j get offset in units of n
+     * @return bits (0 -> n-1) + j * n of x, copied to bits (0 -> n-1) + i * n
+     */
     protected long extract(long x, int i, int j) {
         long y = 0;
         for (int k = 0; k < n; k++)

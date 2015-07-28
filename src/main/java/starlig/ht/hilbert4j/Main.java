@@ -1,15 +1,15 @@
 package starlig.ht.hilbert4j;
 
-
 /**
  * Created by isaac on 7/11/15.
  */
 public class Main {
+
     public static void main(String[] args) {
         int n = 2;
         int m = 2;
         Hilbert hil = new Hilbert(n, m);
-        for(int i = 0; i < hil.getLength(); i++) {
+        for (int i = 0; i < hil.getLength(); i++) {
             // i
             prn(String.format("i=%d ", i));
             // p = H-1(i)
