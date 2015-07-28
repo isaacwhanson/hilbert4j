@@ -100,7 +100,7 @@ public class Hilbert {
      * @param i index
      * @return ith reflected gray code
      */
-    public long getGrayCode(long i) {
+    public long gray(long i) {
         return i ^ i >>> 1;
     }
 
@@ -108,7 +108,7 @@ public class Hilbert {
      * @param gc reflected gray code
      * @return index in set of gray codes
      */
-    public long getGrayCodeInv(long gc) {
+    public long grayInv(long gc) {
         int bits = log2(gc) + 1;
         long result = gc;
         for (int shift = 1; shift < bits; shift++)
@@ -129,7 +129,7 @@ public class Hilbert {
      * @return entry point on sub-hypercube
      */
     protected long entry(long i) {
-        return i == 0L ? 0L : getGrayCode(i - 1 >>> 1 << 1);
+        return i == 0L ? 0L : gray(i - 1 >>> 1 << 1);
     }
 
     /**
@@ -174,7 +174,7 @@ public class Hilbert {
         long e = 0L;
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
-            long w = getGrayCodeInv(transform(e, d, extract(p, 0, i)));
+            long w = grayInv(transform(e, d, extract(p, 0, i)));
             h = h << n | w;
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
@@ -187,13 +187,12 @@ public class Hilbert {
      * @return point on curve at h (interlaced)
      */
     public long hilbertInv(long h) {
+        long p = 0L;
         long e = 0L;
         int d = 0;
-        long p = 0L;
         for (int i = m - 1; i > -1; i--) {
             long w = extract(h, 0, i);
-            long l = transformInv(e, d, getGrayCode(w));
-            p ^= extract(l, i, 0);
+            p ^= extract(transformInv(e, d, gray(w)), i, 0);
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
         }
