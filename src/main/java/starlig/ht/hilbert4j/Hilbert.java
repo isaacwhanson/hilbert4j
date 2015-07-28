@@ -7,26 +7,6 @@ public class Hilbert {
 
     /**
      * @param x bit-field
-     * @param i position
-     * @return bit i in x
-     */
-    public static int getBit(long x, int i) {
-        return (int) (x >>> i & 1L);
-    }
-
-    /**
-     * @param x bit-field
-     * @param i position
-     * @param b value
-     * @return x with b at i
-     */
-    public static long setBit(long x, int i, int b) {
-        long bi = 1L << i;
-        return b == 1 ? x | bi : x & ~bi;
-    }
-
-    /**
-     * @param x bit-field
      * @return minimum bits to represent value - 1
      */
     public static int log2(long x) {
