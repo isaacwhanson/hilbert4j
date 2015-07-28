@@ -6,8 +6,8 @@ package starlig.ht.hilbert4j;
 public class Main {
 
     public static void main(String[] args) {
-        int n = 2;
-        int m = 2;
+        int n = 3;
+        int m = 8;
         Hilbert hil = new Hilbert(n, m);
         for (int i = 0; i < hil.getLength(); i++) {
             // i

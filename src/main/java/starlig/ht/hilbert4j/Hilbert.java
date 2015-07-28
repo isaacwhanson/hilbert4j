@@ -110,12 +110,9 @@ public class Hilbert {
      */
     public long getGrayCodeInv(long gc) {
         int bits = log2(gc) + 1;
-        int shift = 1;
         long result = gc;
-        while (shift < bits) {
+        for (int shift = 1; shift < bits; shift++)
             result ^= gc >>> shift;
-            shift++;
-        }
         return result;
     }
 
@@ -162,9 +159,9 @@ public class Hilbert {
      * @return bits (0 -> n-1) + j * n of x, copied to bits (0 -> n-1) + i * n
      */
     protected long extract(long x, int i, int j) {
-        long y = 0;
+        long y = 0L;
         for (int k = 0; k < n; k++)
-            y = setBit(y, k + (i * n), getBit(x, k + (j * n)));
+            y = setBit(y, k + i * n, getBit(x, k + j * n));
         return y;
     }
 
