@@ -11,7 +11,7 @@ public class Hilbert {
      * @return bit i in x
      */
     public static int getBit(long x, int i) {
-        return (int) ((x >>> i) & 1L);
+        return (int) (x >>> i & 1L);
     }
 
     /**
@@ -68,7 +68,7 @@ public class Hilbert {
      * @return x with n lsb rotated by i right >>>
      */
     public long rotateRight(long x, int i) {
-        return (((x >>> i) | (x << (n - i))) & mask(n)) | (x & ~mask(n));
+        return ((x >>> i | x << n - i) & mask(n)) | (x & ~mask(n));
     }
 
     /**
@@ -77,7 +77,7 @@ public class Hilbert {
      * @return x with n lsb rotated by i left <<
      */
     public long rotateLeft(long x, int i) {
-        return (((x << i) | (x >>> (n - i))) & mask(n)) | (x & ~mask(n));
+        return ((x << i | x >>> n - i) & mask(n)) | (x & ~mask(n));
     }
 
     /**
@@ -93,7 +93,7 @@ public class Hilbert {
      * @return number of points, 2^(n*m)
      */
     public long getLength() {
-        return 1L << (n * m);
+        return 1L << n * m;
     }
 
     /**
@@ -101,7 +101,7 @@ public class Hilbert {
      * @return ith reflected gray code
      */
     public long getGrayCode(long i) {
-        return i ^ (i >>> 1);
+        return i ^ i >>> 1;
     }
 
     /**
@@ -113,7 +113,7 @@ public class Hilbert {
         int shift = 1;
         long result = gc;
         while (shift < bits) {
-            result ^= (gc >>> shift);
+            result ^= gc >>> shift;
             shift++;
         }
         return result;
@@ -132,7 +132,7 @@ public class Hilbert {
      * @return entry point on sub-hypercube
      */
     protected long entry(long i) {
-        return i == 0L ? 0L : getGrayCode(((i - 1) >>> 1) << 1);
+        return i == 0L ? 0L : getGrayCode(i - 1 >>> 1 << 1);
     }
 
     /**
@@ -178,7 +178,7 @@ public class Hilbert {
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
             long w = getGrayCodeInv(transform(e, d, extract(p, 0, i)));
-            h = (h << n) | w;
+            h = h << n | w;
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
         }
