@@ -158,10 +158,10 @@ public class Hilbert {
      * @param j get offset in units of n
      * @return bits (0 -> n-1) + j * n of x, copied to bits (0 -> n-1) + i * n
      */
-    protected long extract(long x, int i, int j) {
+    protected long copy(long x, int i, int j) {
         long y = 0L;
         for (int k = 0; k < n; k++)
-            y = setBit(y, k + i * n, getBit(x, k + j * n));
+            y = setBit(y, k + j * n, getBit(x, k + i * n));
         return y;
     }
 
@@ -174,7 +174,7 @@ public class Hilbert {
         long e = 0L;
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
-            long w = grayInv(transform(e, d, extract(p, 0, i)));
+            long w = grayInv(transform(e, d, copy(p, i, 0)));
             h = h << n | w;
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
@@ -191,8 +191,8 @@ public class Hilbert {
         long e = 0L;
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
-            long w = extract(h, 0, i);
-            p ^= extract(transformInv(e, d, gray(w)), i, 0);
+            long w = copy(h, i, 0);
+            p ^= copy(transformInv(e, d, gray(w)), 0, i);
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
         }
