@@ -163,6 +163,13 @@ public class Hilbert {
         return transform(rotateRight(e, d + 1), n - d - 2, b);
     }
 
+    protected long extract(long x, int i, int j) {
+        long y = 0;
+        for (int k = 0; k < n; k++)
+            y = setBit(y, k + (i * n), getBit(x, k + (j * n)));
+        return y;
+    }
+
     /**
      * @param p interlaced point data
      * @return hilbert index of point p
@@ -172,10 +179,7 @@ public class Hilbert {
         long e = 0L;
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
-            long l = 0;
-            for (int j = 0; j < n; j++)
-                l = setBit(l, j, getBit(p, j + (i * n)));
-            long w = getGrayCodeInv(transform(e, d, l));
+            long w = getGrayCodeInv(transform(e, d, extract(p, 0, i)));
             h = (h << n) | w;
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
@@ -192,12 +196,9 @@ public class Hilbert {
         int d = 0;
         long p = 0L;
         for (int i = m - 1; i > -1; i--) {
-            long w = 0L;
-            for (int j = 0; j < n; j++)
-                w = setBit(w, j, getBit(h, j + (i * n)));
+            long w = extract(h, 0, i);
             long l = transformInv(e, d, getGrayCode(w));
-            for (int j = 0; j < n; j++)
-                p = setBit(p, j + (i * n), getBit(l, j));
+            p ^= extract(l, i, 0);
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
         }
