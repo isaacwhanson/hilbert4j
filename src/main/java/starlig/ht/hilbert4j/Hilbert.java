@@ -159,10 +159,7 @@ public class Hilbert {
      * @return bits (0 -> n-1) + j * n of x, copied to bits (0 -> n-1) + i * n
      */
     protected long copy(long x, int i, int j) {
-        long y = 0L;
-        for (int k = 0; k < n; k++)
-            y = setBit(y, k + j * n, getBit(x, k + i * n));
-        return y;
+        return (x & mask(n) << i * n) >>> i * n << j * n;
     }
 
     /**
