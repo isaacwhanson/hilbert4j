@@ -30,6 +30,26 @@ public class Hilbert {
     public static int tsb(long x) {
         return Long.numberOfTrailingZeros(~x);
     }
+
+    /**
+     * @param i index
+     * @return ith reflected gray code
+     */
+    public static long gray(long i) {
+        return i ^ i >>> 1;
+    }
+
+    /**
+     * @param gc reflected gray code
+     * @return index in set of gray codes
+     */
+    public static long grayInv(long gc) {
+        int bits = log2(gc) + 1;
+        long result = gc;
+        for (int shift = 1; shift < bits; shift++)
+            result ^= gc >>> shift;
+        return result;
+    }
     protected int n;
     protected int m;
 
@@ -40,6 +60,38 @@ public class Hilbert {
     public Hilbert(int n, int m) {
         this.n = n;
         this.m = m;
+    }
+
+    /**
+     * @return number of points, 2^(n*m)
+     */
+    public long getLength() {
+        return 1L << n * m;
+    }
+
+    /**
+     * @param x long to convert
+     * @return binary string
+     */
+    public String toBinaryString(long x) {
+        return String.format("%" + Integer.toString(n * m) + "s",
+                             Long.toBinaryString(x)).replace(" ", "0");
+    }
+
+    /**
+     * @param i index on curve
+     * @return intra-sub hypercube dimension
+     */
+    protected int intra(long i) {
+        return i == 0 ? 0 : (int) Long.remainderUnsigned(tsb(i - 1L + (i & 1L)), n);
+    }
+
+    /**
+     * @param i index on curve
+     * @return entry point on sub-hypercube
+     */
+    protected long entry(long i) {
+        return i == 0L ? 0L : gray(i - 1 >>> 1 << 1);
     }
 
     /**
@@ -58,58 +110,6 @@ public class Hilbert {
      */
     public long rotateLeft(long x, int i) {
         return ((x << i | x >>> n - i) & mask(n)) | (x & ~mask(n));
-    }
-
-    /**
-     * @param x long to convert
-     * @return binary string
-     */
-    public String toBinaryString(long x) {
-        String format = "%" + Integer.toString(n * m) + "s";
-        return String.format(format, Long.toBinaryString(x)).replace(" ", "0");
-    }
-
-    /**
-     * @return number of points, 2^(n*m)
-     */
-    public long getLength() {
-        return 1L << n * m;
-    }
-
-    /**
-     * @param i index
-     * @return ith reflected gray code
-     */
-    public long gray(long i) {
-        return i ^ i >>> 1;
-    }
-
-    /**
-     * @param gc reflected gray code
-     * @return index in set of gray codes
-     */
-    public long grayInv(long gc) {
-        int bits = log2(gc) + 1;
-        long result = gc;
-        for (int shift = 1; shift < bits; shift++)
-            result ^= gc >>> shift;
-        return result;
-    }
-
-    /**
-     * @param i index on curve
-     * @return intra-sub hypercube dimension
-     */
-    protected int intra(long i) {
-        return i == 0 ? 0 : (int) Long.remainderUnsigned(tsb(i - 1L + (i & 1L)), n);
-    }
-
-    /**
-     * @param i index on curve
-     * @return entry point on sub-hypercube
-     */
-    protected long entry(long i) {
-        return i == 0L ? 0L : gray(i - 1 >>> 1 << 1);
     }
 
     /**
@@ -136,7 +136,7 @@ public class Hilbert {
      * @param x bit-field
      * @param i set offset in units of n
      * @param j get offset in units of n
-     * @return bits (0 -> n-1) + j * n of x, copied to bits (0 -> n-1) + i * n
+     * @return n lsb of x shifted right by i*n, then shifted left by j*n
      */
     protected long copy(long x, int i, int j) {
         return (x >>> i * n & mask(n)) << j * n;
