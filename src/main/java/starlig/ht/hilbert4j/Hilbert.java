@@ -139,7 +139,7 @@ public class Hilbert {
      * @return bits (0 -> n-1) + j * n of x, copied to bits (0 -> n-1) + i * n
      */
     protected long copy(long x, int i, int j) {
-        return (x & mask(n) << i * n) >>> i * n << j * n;
+        return (x >>> i * n & mask(n)) << j * n;
     }
 
     /**
