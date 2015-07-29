@@ -10,17 +10,17 @@ public class Hilbert {
      * @param x bit-field
      * @return minimum bits to represent value - 1
      */
-    public static int log2(long x) {
+    public static byte log2(long x) {
         if (x == 0)
             return 0;
-        return 63 - Long.numberOfLeadingZeros(x);
+        return (byte) (63 - Long.numberOfLeadingZeros(x));
     }
 
     /**
      * @param i number of bits
      * @return a bit mask of i lsb
      */
-    public static long mask(int i) {
+    public static long mask(byte i) {
         return ~(~0L << i);
     }
 
@@ -28,8 +28,8 @@ public class Hilbert {
      * @param x number
      * @return number of trailing set bits (ones)
      */
-    public static int tsb(long x) {
-        return Long.numberOfTrailingZeros(~x);
+    public static byte tsb(long x) {
+        return (byte) Long.numberOfTrailingZeros(~x);
     }
 
     /**
@@ -45,20 +45,20 @@ public class Hilbert {
      * @return index in set of gray codes
      */
     public static long grayInv(long gc) {
-        int bits = log2(gc) + 1;
+        byte bits = (byte) (log2(gc) + 1);
         long result = gc;
-        for (int shift = 1; shift < bits; shift++)
+        for (byte shift = 1; shift < bits; shift++)
             result ^= gc >>> shift;
         return result;
     }
-    protected int n;
-    protected int m;
+    protected byte n;
+    protected byte m;
 
     /**
      * @param n number of dimensions
      * @param m bits per dimension (order)
      */
-    public Hilbert(int n, int m) {
+    public Hilbert(byte n, byte m) {
         this.n = n;
         this.m = m;
     }
@@ -84,7 +84,7 @@ public class Hilbert {
      * @return intra-sub hypercube dimension
      */
     protected int intra(long i) {
-        return i == 0 ? 0 : (int) Long.remainderUnsigned(tsb(i - 1L + (i & 1L)), n);
+        return i == 0 ? 0 : (byte) Long.remainderUnsigned(tsb(i - 1L + (i & 1L)), n);
     }
 
     /**
@@ -100,7 +100,7 @@ public class Hilbert {
      * @param i rotate bits right
      * @return x with n lsb rotated by i right >>>
      */
-    public long rotateRight(long x, int i) {
+    protected long rotateRight(long x, byte i) {
         return ((x >>> i | x << n - i) & mask(n)) | (x & ~mask(n));
     }
 
@@ -109,7 +109,7 @@ public class Hilbert {
      * @param i rotate bits left
      * @return x with n lsb rotated by i left <<
      */
-    public long rotateLeft(long x, int i) {
+    protected long rotateLeft(long x, byte i) {
         return ((x << i | x >>> n - i) & mask(n)) | (x & ~mask(n));
     }
 
@@ -119,8 +119,8 @@ public class Hilbert {
      * @param b index on curve
      * @return rotated entry on sub-hypercube
      */
-    protected long transform(long e, int d, long b) {
-        return rotateRight(b ^ e, d + 1);
+    protected long transform(long e, byte d, long b) {
+        return rotateRight(b ^ e, (byte) (d + 1));
     }
 
     /**
@@ -129,8 +129,8 @@ public class Hilbert {
      * @param b index on curve
      * @return inverse transform
      */
-    protected long transformInv(long e, int d, long b) {
-        return transform(rotateRight(e, d + 1), n - d - 2, b);
+    protected long transformInv(long e, byte d, long b) {
+        return transform(rotateRight(e, (byte) (d + 1)), (byte) (n - d - 2), b);
     }
 
     /**
@@ -138,8 +138,8 @@ public class Hilbert {
      * @param i set offset in units of n
      * @return bits i*n -> (i*n)+n of x
      */
-    protected long read(long x, int i) {
-        return x >>> i * n & mask(n);
+    protected byte read(long x, byte i) {
+        return (byte) (x >>> i * n & mask(n));
     }
 
     /**
@@ -149,12 +149,12 @@ public class Hilbert {
     public long hilbert(long p) {
         long h = 0L;
         long e = 0L;
-        int d = 0;
-        for (int i = m - 1; i > -1; i--) {
+        byte d = 0;
+        for (byte i = (byte) (m - 1); i > -1; i--) {
             long w = grayInv(transform(e, d, read(p, i)));
             h = h << n | w;
-            e ^= rotateLeft(entry(w), d + 1);
-            d = (d + intra(w) + 1) % n;
+            e ^= rotateLeft(entry(w), (byte) (d + 1));
+            d = (byte) ((d + intra(w) + 1) % n);
         }
         return h;
     }
@@ -166,12 +166,12 @@ public class Hilbert {
     public long hilbertInv(long h) {
         long p = 0L;
         long e = 0L;
-        int d = 0;
-        for (int i = m - 1; i > -1; i--) {
+        byte d = 0;
+        for (byte i = (byte) (m - 1); i > -1; i--) {
             long w = read(h, i);
             p |= transformInv(e, d, gray(w)) << i * n;
-            e ^= rotateLeft(entry(w), d + 1);
-            d = (d + intra(w) + 1) % n;
+            e ^= rotateLeft(entry(w), (byte) (d + 1));
+            d = (byte) ((d + intra(w) + 1) % n);
         }
         return p;
     }
