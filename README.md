@@ -1,2 +1,2 @@
 # hilbert4j
-Converts to/from n-dimensional points and indices along Hilbert curve
+Converts between n-dimensional points and indices along n-dimensional Hilbert curve
