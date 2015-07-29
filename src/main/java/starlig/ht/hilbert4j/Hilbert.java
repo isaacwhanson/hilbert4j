@@ -1,3 +1,4 @@
+
 package starlig.ht.hilbert4j;
 
 /**
@@ -135,11 +136,10 @@ public class Hilbert {
     /**
      * @param x bit-field
      * @param i set offset in units of n
-     * @param j get offset in units of n
-     * @return n lsb of x shifted right by i*n, then shifted left by j*n
+     * @return bits i*n -> (i*n)+n of x
      */
-    protected long copy(long x, int i, int j) {
-        return (x >>> i * n & mask(n)) << j * n;
+    protected long read(long x, int i) {
+        return x >>> i * n & mask(n);
     }
 
     /**
@@ -151,7 +151,7 @@ public class Hilbert {
         long e = 0L;
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
-            long w = grayInv(transform(e, d, copy(p, i, 0)));
+            long w = grayInv(transform(e, d, read(p, i)));
             h = h << n | w;
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
@@ -168,8 +168,8 @@ public class Hilbert {
         long e = 0L;
         int d = 0;
         for (int i = m - 1; i > -1; i--) {
-            long w = copy(h, i, 0);
-            p ^= copy(transformInv(e, d, gray(w)), 0, i);
+            long w = read(h, i);
+            p |= transformInv(e, d, gray(w)) << i * n;
             e ^= rotateLeft(entry(w), d + 1);
             d = (d + intra(w) + 1) % n;
         }
